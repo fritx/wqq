@@ -1,0 +1,19 @@
+{
+  "name": "wqq",
+  "version": "0.0.1",
+  "description": "基于webqq协议的api模块",
+  "keywords": [
+    "qq",
+    "webqq",
+    "smartqq",
+    "wqq"
+  ],
+  "repository": "git@github.com:fritx/wqq.git",
+  "dependencies": {
+    "async": "^0.9.0",
+    "debug": "^2.1.1",
+    "easy-emitter": "0.0.2",
+    "lodash": "^2.4.1",
+    "request": "^2.51.0"
+  }
+}
