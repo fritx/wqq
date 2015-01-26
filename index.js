@@ -44,21 +44,31 @@ QQ.prototype._onPoll = function _onPoll(d) {
     return this.jar.setCookie('ptwebqq=' + d.p, 'qq.com')
   }
   if (!Array.isArray(d.result)) return
+  d.result = d.result.sort(function (a, b) {
+    return a.value.time - b.value.time
+  })
   var _this = this
   async.eachSeries(d.result, function (d, next) {
     _.extend(d, d.value)
     delete d.value
+    if (d.msg_type === 48) { // kick_message
+      return _this._onDisconnect()
+    }
     if (_.contains([
       'input_notify', // 121
       'buddies_status_change',
       'system_message'
     ], d.poll_type)) return next()
-    debug('接收消息', d)
+    //debug('接收消息', d)
     if (!_.contains([
-      9, // message
+      45, // group_web_message
+      43, // group_message
       42, // discu_message
-      43 // group_message
-    ], d.msg_type)) return next()
+      9 // message
+    ], d.msg_type)) {
+      debug('未知消息类型', d)
+      return next()
+    }
     async.waterfall([
       function (next) {
         if (d.group_code) {
@@ -82,6 +92,7 @@ QQ.prototype._onPoll = function _onPoll(d) {
       function (next) {
         _this.getFriendMeta(d.send_uin || d.from_uin, function (e, d1) {
           if (d1.account) d.send_account= d1.account
+          if (d1.account === 80000000) d.anonymous = true
           if (d1.nick) d.send_nick = d1.nick
           if (d1.mark) d.send_mark = d1.mark
           next()
@@ -89,23 +100,36 @@ QQ.prototype._onPoll = function _onPoll(d) {
       },
       function (next1) {
         var c = d.content
+        if (!c) return next1()
+        if (Array.isArray(c[0]) && c[0][0] === 'font') c = c.slice(1)
         c = c.map(function (chunk) {
           if (typeof chunk === 'string') return chunk
-          if (chunk[0] === 'font') return null
           if (chunk[0] === 'cface') {
             chunk[1] = chunk[1].name.match(/\.(.*)$/)[1]
             return chunk
           }
         })
         c = _.compact(c)
+        if (typeof c[0] === 'string' &&
+          /[\u0000\u0002]宋体\r$/.test(c[0])) return
         d.content = c
-        d = _.omit(d, [
-          'msg_id', 'msg_id2', 'reply_ip', 'seq', 'info_seq',
-          'xml', 'group_type', 'ver'
-        ])
         next1()
+      },
+      function (next) {
+        if (d.msg_type === 45) {
+          var d1 = d.xml.match(/<n t="t" s="(\d+:\d+):\d+"\/>/)
+          if (!d1) return
+          d.timestr = d1[1]
+          d1 = d.xml.match(/<n t="t" s="([^=]*)"\/>/g)
+          d.file = _.last(d1).match(/<n t="t" s="([^=]*)"\/>/)[1]
+        }
+        next()
       }
     ], function (e) {
+      d = _.omit(d, [
+        'msg_id', 'msg_id2', 'reply_ip', 'seq', 'info_seq',
+        'xml', 'group_type', 'ver'
+      ])
       _this.emit('message', d)
       next()
     })
