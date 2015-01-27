@@ -104,6 +104,7 @@ QQ.prototype._onPoll = function _onPoll(d) {
         if (Array.isArray(c[0]) && c[0][0] === 'font') c = c.slice(1)
         c = c.map(function (chunk) {
           if (typeof chunk === 'string') return chunk
+          if (chunk[0] === 'face') return chunk
           if (chunk[0] === 'cface') {
             chunk[1] = chunk[1].name.match(/\.(.*)$/)[1]
             return chunk
