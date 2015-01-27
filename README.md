@@ -2,7 +2,7 @@
 
 基于 <http://w.qq.com> `v=20130916001` webqq协议 的api模块
 
-类似的项目 [qqbot](https://github.com/xhan/qqbot) [webqq-client](https://github.com/longbai/webqq-client) [Webqq-Client(Perl)](https://github.com/sjdy521/Webqq-Client)
+类似的项目 [qqbot](https://github.com/xhan/qqbot), [webqq-client](https://github.com/longbai/webqq-client), [Webqq-Client(Perl)](https://github.com/sjdy521/Webqq-Client)
 
 基于wqq开发的一个qq命令行 [qqlog](https://github.com/fritx/qqlog)
 

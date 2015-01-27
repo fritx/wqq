@@ -310,11 +310,11 @@ QQ.prototype.getFriendInfo = function getFriendInfo(tuin, cb) {
   var _this = this
   var o = {}
   this._getFriendUin(tuin, function (e, d) {
-    o.account = d.result.account
+    if (d && d.result) o.account = d.result.account
     _this._getFriendInfo(tuin, function (e, d) {
-      _.extend(o, d.result)
+      _.extend(o, d && d.result)
       _this._getFriendLNick(tuin, function (e, d) {
-        if (d.result) o.lnick = d.result.lnick
+        if (d && d.result) o.lnick = d.result.lnick
         cb(e, o)
       })
     })
