@@ -170,7 +170,8 @@ QQ.prototype._poll = function _poll(cb) {
     headers: {
       'Referer': 'http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2'
     },
-    timeout: 20000,
+    //timeout: 20000,
+    timeout: 55000, // by @junfan
     json: true
   }, function (e, r, d) {
     cb(e, d)
