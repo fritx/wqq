@@ -131,12 +131,14 @@ QQ.prototype._onPoll = function _onPoll(d) {
         'msg_id', 'msg_id2', 'reply_ip', 'seq', 'info_seq',
         'xml', 'group_type', 'ver'
       ])
+      if (d.msg_type === 9) d.is_private = true
       _this.emit('message', d)
       next()
     })
   })
 }
 QQ.prototype._onDisconnect = function _onDisconnect() {
+  // fixme: 需要重新登录
   this.failCount = 0
   this.stopPoll()
   this.emit('disconnect')
@@ -171,7 +173,8 @@ QQ.prototype._poll = function _poll(cb) {
       'Referer': 'http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2'
     },
     //timeout: 20000,
-    timeout: 55000, // by @junfan
+    //timeout: 55000, // by @junfan
+    timeout: 60000,
     json: true
   }, function (e, r, d) {
     cb(e, d)
@@ -184,7 +187,7 @@ QQ.prototype.sendDiscuMsg = function sendDiscuMsg(did, chunks, cb) {
     form: {
       r: JSON.stringify({
         did: did,
-        content: chunks.concat(['font', font]),
+        content: JSON.stringify(chunks.concat([['font', font]])),
         clientid: clientid,
         msg_id: nextMsgId(),
         psessionid: this.store.psessionid
@@ -192,7 +195,8 @@ QQ.prototype.sendDiscuMsg = function sendDiscuMsg(did, chunks, cb) {
     },
     headers: {
       'Referer': 'http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2'
-    }
+    },
+    json: true
   }, function (e, r, d) {
     cb(e, d.retcode === 0)
   })
@@ -203,7 +207,7 @@ QQ.prototype.sendGroupMsg = function sendGroupMsg(uin, chunks, cb) {
     form: {
       r: JSON.stringify({
         group_uin: uin,
-        content: chunks.concat(['font', font]),
+        content: JSON.stringify(chunks.concat([['font', font]])),
         clientid: clientid,
         msg_id: nextMsgId(),
         psessionid: this.store.psessionid
@@ -211,7 +215,8 @@ QQ.prototype.sendGroupMsg = function sendGroupMsg(uin, chunks, cb) {
     },
     headers: {
       'Referer': 'http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2'
-    }
+    },
+    json: true
   }, function (e, r, d) {
     cb(e, d.retcode === 0)
   })
@@ -222,7 +227,7 @@ QQ.prototype.sendBuddyMsg = function sendBuddyMsg(uin, chunks, cb) {
     form: {
       r: JSON.stringify({
         to: uin,
-        content: chunks.concat(['font', font]),
+        content: JSON.stringify(chunks.concat([['font', font]])),
         clientid: clientid,
         msg_id: nextMsgId(),
         psessionid: this.store.psessionid
@@ -230,7 +235,8 @@ QQ.prototype.sendBuddyMsg = function sendBuddyMsg(uin, chunks, cb) {
     },
     headers: {
       'Referer': 'http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2'
-    }
+    },
+    json: true
   }, function (e, r, d) {
     cb(e, d.retcode === 0)
   })

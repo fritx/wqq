@@ -45,3 +45,7 @@ qq.getVcode(qqnum, function (err, buffer) {
 - 无法呈现/发送图片
 - 极个别emoji识别不全
 - [webqq即将废弃](http://www.pingwest.com/bye-web-qq/)
+
+## 关闭qq设备锁 才能正常登录
+
+<http://jingyan.baidu.com/article/60ccbceb005c4c64cab197d8.html>
