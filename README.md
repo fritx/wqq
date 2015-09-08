@@ -14,11 +14,24 @@ $ npm install wqq
 var QQ = require('wqq')
 var qq = new QQ()
 qq.getVcode(qqnum, function (err, buffer) {
+  // 如果需要的话 buffer为验证码图片 一般不会出现
   qq.login(qqpsw, vcode || '', function (err, nick) {
     qq.on('disconnect', function () { exit() })
     qq.on('message', function (msg) { log(msg) })
     qq.startPoll()
   })
+})
+```
+
+```js
+// 实现"qq鹦鹉" 跟人说话 :)
+qq.on('message', function (msg) {
+  var method = msg.group_name ? 'sendGroupMsg' :
+    msg.dicus_name ? 'sendDicusMsg' :
+    msg.is_private ? 'sendBuddyMsg' : null
+  if (method) {
+    qq[method](msg.from_uin, msg.content, function(err, ok){})
+  }
 })
 ```
 
@@ -48,4 +61,4 @@ qq.getVcode(qqnum, function (err, buffer) {
 
 ## 关闭qq设备锁 才能正常登录
 
-<http://jingyan.baidu.com/article/60ccbceb005c4c64cab197d8.html>
+[百度经验 手机qq设备锁怎么解除](http://jingyan.baidu.com/article/60ccbceb005c4c64cab197d8.html)
