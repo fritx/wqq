@@ -31,17 +31,26 @@ var QQ = module.exports = function QQ() {
   this.discus = {}
   this.friends = null
   this.toPoll = false
-  this.failCount = 0
+  // this.failCount = 0
   Emitter.call(this)
 }
 
 QQ.prototype._onPoll = function _onPoll(d) {
-  if (!d || d.retcode === 103) {
-    if (++this.failCount > 3) this._onDisconnect()
-    return
-  } else this.failCount = 0
+  debug('拉取消息包', d)
+  if (!d) return // 未响应
+  if (typeof d === 'string') return // 偶尔返回异常html
+  if (d.retcode === 102) return // 无消息
   if (d.retcode === 116) {
     return this.jar.setCookie('ptwebqq=' + d.p, 'qq.com')
+  }
+  // if (_.contains([
+  //   100, 120, 121,  // NotReLogin, ReLinkFailure
+  //   103, 112, 113, 115
+  // ], d.retcode) {
+  //   return this._onDisconnect()
+  // }
+  if (d.retcode !== 0) {
+    return this._onDisconnect()
   }
   if (!Array.isArray(d.result)) return
   d.result = d.result.sort(function (a, b) {
@@ -51,15 +60,15 @@ QQ.prototype._onPoll = function _onPoll(d) {
   async.eachSeries(d.result, function (d, next) {
     _.extend(d, d.value)
     delete d.value
+    // debug('接收消息', d)
     if (d.msg_type === 48) { // kick_message
-      return _this._onDisconnect()
+      return _this._onKick()
     }
     if (_.contains([
       'input_notify', // 121
       'buddies_status_change',
       'system_message'
     ], d.poll_type)) return next()
-    //debug('接收消息', d)
     if (!_.contains([
       45, // group_web_message
       43, // group_message
@@ -69,6 +78,7 @@ QQ.prototype._onPoll = function _onPoll(d) {
       debug('未知消息类型', d)
       return next()
     }
+    // debug('接收消息', d)
     async.waterfall([
       function (next) {
         if (d.group_code) {
@@ -140,9 +150,12 @@ QQ.prototype._onPoll = function _onPoll(d) {
 }
 QQ.prototype._onDisconnect = function _onDisconnect() {
   // fixme: 需要重新登录
-  this.failCount = 0
   this.stopPoll()
   this.emit('disconnect')
+}
+QQ.prototype._onKick = function _onKick() {
+  this.stopPoll()
+  this.emit('kick')
 }
 
 QQ.prototype.stopPoll = function stopPoll() {
@@ -153,10 +166,13 @@ QQ.prototype.startPoll = function startPoll() {
   this._loopPoll()
 }
 QQ.prototype._loopPoll = function _loopPoll() {
+  if (!this.toPoll) return
   var _this = this
   this._poll(function (e, d) {
     _this._onPoll(d)
-    if (_this.toPoll) _this._loopPoll()
+    setTimeout(function(){
+      _this._loopPoll()
+    }, e ? 10000 : 0)
   })
 }
 QQ.prototype._poll = function _poll(cb) {
@@ -175,7 +191,7 @@ QQ.prototype._poll = function _poll(cb) {
     },
     //timeout: 20000,
     //timeout: 55000, // by @junfan
-    timeout: 60000,
+    timeout: 65000, // 现在他们是60秒
     json: true
   }, function (e, r, d) {
     cb(e, d)
