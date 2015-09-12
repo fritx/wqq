@@ -1,6 +1,6 @@
 {
   "name": "wqq",
-  "version": "0.0.7-1",
+  "version": "0.0.8",
   "description": "基于webqq协议的api模块",
   "keywords": [
     "qq",

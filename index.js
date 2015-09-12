@@ -124,6 +124,7 @@ QQ.prototype._onPoll = function _onPoll(d) {
           d1 = d.xml.match(/<n t="t" s="([^=]*)"\/>/g)
           d.file = _.last(d1).match(/<n t="t" s="([^=]*)"\/>/)[1]
         }
+        if (d.poll_type === 'file_message') d.file = d.name
         next()
       }
     ], function (e) {
@@ -464,7 +465,7 @@ QQ.prototype.login = function login(password, vcode, cb) {
   this.form.vcode = vcode || ''
   this._login(function (e, d) {
     var m = d.match(/'([^']*)','([^']*)','([^']*)','([^']*)','([^']*)',\s*'([^']*)'/)
-    if (!/成功/.test(m[5])) return cb(e, false)
+    if (!/成功/.test(m[5])) return cb(e, false, m[5])
     _this.store.nick = m[6]
     _this.request({
       url: m[3],
@@ -586,7 +587,7 @@ QQ.prototype._checkVcode = function _checkVcode(cb) {
       'Accept-Encoding': 'gzip, deflate, sdch',
       'Accept-Language': 'zh-CN,zh;q=0.8,en;q=0.6',
       'Host': 'ssl.ptlogin2.qq.com',
-      'Referer': 'https://ui.ptlogin2.qq.com/cgi-bin/login?daid=164&target=self&style=16&mibao_css=m_webqq&appid=&enable_qlogin=0&no_verifyimg=1&s_url=http%3A%2F%2Fw.qq.com%2Fproxy.html&f_url=loginerroralert&strong_login=1&login_state=10&t=20131024001',
+      'Referer': 'https://ui.ptlogin2.qq.com/cgi-bin/login?daid=164&target=self&style=16&mibao_css=m_webqq&appid=' + appid + '&enable_qlogin=0&no_verifyimg=1&s_url=http%3A%2F%2Fw.qq.com%2Fproxy.html&f_url=loginerroralert&strong_login=1&login_state=10&t=20131024001',
     }
   }, function (e, r, d) {
     cb(e, d)
