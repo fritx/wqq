@@ -119,6 +119,10 @@ QQ.prototype._onPoll = function _onPoll(d) {
             chunk[1] = chunk[1].name.match(/\.(.*)$/)[1]
             return chunk
           }
+          if (chunk[0] === 'offpic') {
+            chunk[1] = chunk[1].success
+            return chunk
+          }
         })
         c = _.compact(c)
         if (typeof c[0] === 'string' &&
@@ -195,6 +199,27 @@ QQ.prototype._poll = function _poll(cb) {
     json: true
   }, function (e, r, d) {
     cb(e, d)
+  })
+}
+
+QQ.prototype.changeStatus = function changeStatus(status, cb) {
+  // 在线online, Q我吧callme, 离开away, 忙碌busy,
+  // 静音silent, 隐身hidden, 离线offline
+  this.request({
+    url: 'http://d.web2.qq.com/channel/change_status2',
+    qs: {
+      newstatus: status,
+      clientid: clientid,
+      psessionid: this.store.psessionid,
+      t: Date.now()
+    },
+    headers: {
+      'Host': 'd.web2.qq.com',
+      'Referer': 'http://d.web2.qq.com/proxy.html?v=20130916001&callback=1&id=2'
+    },
+    json: true
+  }, function (e, r, d) {
+    cb(e, d.retcode === 0)
   })
 }
 

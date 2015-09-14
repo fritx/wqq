@@ -37,10 +37,9 @@ qq.on('message', function (msg) {
 
 ## 功能
 
-- 获取验证码/登录
+- 获取验证码/登录/改变状态
 - 开启/中断消息轮训
-- 识别单人/群/讨论组消息
-- 识别群匿名/群文件消息
+- 识别单人/群/群匿名/讨论组消息/文件
 - 识别消息中的文本/图片/emoji
 - 识别发送者的昵称/群昵称/备注
 - 获取单人/群/讨论组资料
@@ -48,17 +47,14 @@ qq.on('message', function (msg) {
 
 ## 待完善
 
-- 登录状态
-- 识别单人/讨论组文件消息
-- 呈现消息中qq表情的语义
+- 呈现/发送图片
+- 呈现/发送文件
+- ~~呈现qq表情语义~~(请使用[qqface](https://github.com/fritx/qqface))
 
-## 不可抗力
+## webqq即将废弃
 
-- 无法呈现单人/讨论组文件消息
-- 无法呈现/发送图片
-- 极个别emoji识别不全
-- [webqq即将废弃](http://www.pingwest.com/bye-web-qq/)
+- [WebQQ就要关闭了，如果用过就来道声再见吧](http://www.pingwest.com/bye-web-qq/)
 
 ## 关闭qq设备锁 才能正常登录
 
-[百度经验 手机qq设备锁怎么解除](http://jingyan.baidu.com/article/60ccbceb005c4c64cab197d8.html)
+[百度经验：手机qq设备锁怎么解除](http://jingyan.baidu.com/article/60ccbceb005c4c64cab197d8.html)
